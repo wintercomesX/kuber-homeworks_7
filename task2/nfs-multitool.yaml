@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-multitool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-multitool
+  template:
+    metadata:
+      labels:
+        app: nfs-multitool
+    spec:
+      containers:
+      - name: multitool
+        image: centos:7
+        command: ["/bin/sh", "-c"]
+        args:
+          - "sleep 3600"
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /mnt/nfs
+      volumes:
+      - name: nfs-volume
+        persistentVolumeClaim:
+          claimName: nfs-pvc
