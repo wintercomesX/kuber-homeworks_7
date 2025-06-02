@@ -1,1 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multi-container-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: multi
+  template:
+    metadata:
+      labels:
+        app: multi
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["/bin/sh", "-c"]
+        args:
+          - "while true; do echo 'Hello from busybox' >> /mnt/shared/file.txt; sleep 5; done"
+        volumeMounts:
+        - name: shared-volume
+          mountPath: /mnt/shared
+      - name: multitool
+        image: quay.io/containers/centos:7
+        command: ["/bin/sh", "-c"]
+        args:
+          - "sleep 3600"
+        volumeMounts:
+        - name: shared-volume
+          mountPath: /mnt/shared
+      volumes:
+      - name: shared-volume
+        persistentVolumeClaim:
+          claimName: local-pvc
 
